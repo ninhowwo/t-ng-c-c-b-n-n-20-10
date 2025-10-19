@@ -1,36 +1,7 @@
-// Hệ thống phân phối quà cho 27 tiểu thư
-const giftDistribution = {
-    // 12 phần giấy note
-    "giấy note": [
-        "Tiểu thư 1", "Tiểu thư 2", "Tiểu thư 3", "Tiểu thư 4", "Tiểu thư 5", "Tiểu thư 6",
-        "Tiểu thư 7", "Tiểu thư 8", "Tiểu thư 9", "Tiểu thư 10", "Tiểu thư 11", "Tiểu thư 12"
-    ],
-    // 13 phần bút nhớ
-    "bút nhớ": [
-        "Tiểu thư 13", "Tiểu thư 14", "Tiểu thư 15", "Tiểu thư 16", "Tiểu thư 17", "Tiểu thư 18",
-        "Tiểu thư 19", "Tiểu thư 20", "Tiểu thư 21", "Tiểu thư 22", "Tiểu thư 23", "Tiểu thư 24", "Tiểu thư 25"
-    ],
-    // 1 phần quà đặc biệt của Ninh-chan
-    "món quà đặc biệt của Ninh-chan": ["Tiểu thư 26"],
-    // 1 phần quà đặc biệt của Nerin ngố
-    "món quà đặc biệt của Nerin ngố": ["Tiểu thư 27"]
-};
-
-// Biểu tượng cho từng loại quà
-const giftIcons = {
-    "giấy note": "📝",
-    "bút nhớ": "🖊️",
-    "món quà đặc biệt của Ninh-chan": "🎁",
-    "món quà đặc biệt của Nerin ngố": "🎁"
-};
-
-// Màu sắc cho từng loại quà
-const giftColors = {
-    "giấy note": "#ffb6c1",
-    "bút nhớ": "#ffc0cb", 
-    "món quà đặc biệt của Ninh-chan": "#ff69b4",
-    "món quà đặc biệt của Nerin ngố": "#ff1493"
-};
+// Hệ thống quà tặng - chỉ có bút nhớ
+const giftType = "bút nhớ";
+const giftIcon = "🖊️";
+const giftColor = "#ffc0cb";
 
 // Lưu trữ quà hiện tại
 let currentGift = null;
@@ -96,75 +67,119 @@ function showSpeechBubble() {
 }
 
 function openGiftBox() {
-    const giftLid = document.getElementById('gift-lid');
+    const bagOpening = document.getElementById('bag-opening');
     const openGiftBtn = document.getElementById('open-gift-btn');
+    const giftBag = document.getElementById('gift-bag');
+    const openingLight = document.getElementById('opening-light');
+    const bagBody = document.getElementById('bag-body');
     
-    // Hiệu ứng mở hộp
-    if (giftLid) {
-        giftLid.classList.add('open');
+    // Hiệu ứng mở nắp túi lên cao 90 độ
+    if (bagOpening) {
+        bagOpening.classList.add('open');
     }
     
-    // Ẩn nút mở quà
+    // Hiệu ứng ánh sáng khi mở túi
+    if (openingLight) {
+        openingLight.classList.add('active');
+    }
+    
+    // Hiệu ứng rung nhẹ thân túi
+    if (bagBody) {
+        bagBody.style.animation = 'bodyShake 0.5s ease-in-out';
+    }
+    
+    // Ẩn nút mở quà với hiệu ứng
     if (openGiftBtn) {
+        openGiftBtn.style.transition = 'all 0.5s ease';
         openGiftBtn.style.opacity = '0';
-        openGiftBtn.style.transform = 'scale(0.8)';
+        openGiftBtn.style.transform = 'scale(0.8) translateY(20px)';
     }
+    
+    // Hiệu ứng trái tim bay lên
+    setTimeout(() => {
+        createHeartParticles();
+    }, 200);
     
     // Hiệu ứng sparkle
-    createSparkleEffect();
+    setTimeout(() => {
+        createSparkleEffect();
+    }, 500);
     
-    // Sau khi mở hộp, hiển thị quà
+    // Sau khi mở nắp túi, hiển thị quà
     setTimeout(() => {
         selectAndShowGift();
-    }, 1000);
+    }, 2000);
+}
+
+function createHeartParticles() {
+    const heartsContainer = document.getElementById('hearts-container');
+    if (!heartsContainer) return;
+    
+    const heartSymbols = ['💕', '💖', '💗', '💝', '💘', '💞'];
+    const colors = ['#ff6b9d', '#ff8fab', '#ffa8c5', '#ffb6c1', '#dda0dd', '#e6a8d8'];
+    
+    // Tạo 15-20 trái tim bay lên
+    for (let i = 0; i < 18; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart-particle';
+            heart.innerHTML = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+            heart.style.fontSize = (6 + Math.random() * 14) + 'px'; // 6px - 20px
+            heart.style.left = (Math.random() * 120 + 10) + 'px'; // Vị trí ngẫu nhiên trong hộp
+            heart.style.top = (Math.random() * 60 + 10) + 'px';
+            
+            heartsContainer.appendChild(heart);
+            
+            // Tự động xóa sau animation
+            setTimeout(() => {
+                if (heart.parentNode) {
+                    heart.parentNode.removeChild(heart);
+                }
+            }, 3000);
+        }, i * 100); // Tạo trái tim mỗi 100ms
+    }
 }
 
 function createSparkleEffect() {
-    const giftBox = document.getElementById('gift-box');
-    if (!giftBox) return;
+    const giftBag = document.getElementById('gift-bag');
+    if (!giftBag) return;
     
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 8; i++) {
         const sparkle = document.createElement('div');
         sparkle.innerHTML = '✨';
         sparkle.style.position = 'absolute';
-        sparkle.style.fontSize = '20px';
+        sparkle.style.fontSize = '16px';
         sparkle.style.pointerEvents = 'none';
         sparkle.style.zIndex = '1000';
         
-        // Vị trí ngẫu nhiên xung quanh hộp quà
-        const angle = (i / 10) * 2 * Math.PI;
-        const radius = 150;
+        // Vị trí ngẫu nhiên xung quanh túi quà
+        const angle = (i / 8) * 2 * Math.PI;
+        const radius = 120;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
         
-        sparkle.style.left = (giftBox.offsetLeft + giftBox.offsetWidth/2 + x) + 'px';
-        sparkle.style.top = (giftBox.offsetTop + giftBox.offsetHeight/2 + y) + 'px';
+        sparkle.style.left = (giftBag.offsetLeft + giftBag.offsetWidth/2 + x) + 'px';
+        sparkle.style.top = (giftBag.offsetTop + giftBag.offsetHeight/2 + y) + 'px';
         
         document.body.appendChild(sparkle);
         
         // Animation
-        sparkle.style.animation = 'sparkle 1s ease-out forwards';
+        sparkle.style.animation = 'sparkle 1.5s ease-out forwards';
         
         setTimeout(() => {
             sparkle.remove();
-        }, 1000);
+        }, 1500);
     }
 }
 
 function selectAndShowGift() {
-    // Chọn ngẫu nhiên một loại quà
-    const giftTypes = Object.keys(giftDistribution);
-    const randomGiftType = giftTypes[Math.floor(Math.random() * giftTypes.length)];
-    
-    // Lấy danh sách người nhận quà này
-    const recipients = giftDistribution[randomGiftType];
-    const randomRecipient = recipients[Math.floor(Math.random() * recipients.length)];
-    
-    currentGift = randomRecipient;
-    currentGiftType = randomGiftType;
+    // Chỉ có một loại quà duy nhất
+    currentGift = "bạn";
+    currentGiftType = giftType;
     
     // Hiển thị kết quả
-    showGiftResult(randomGiftType, randomRecipient);
+    showGiftResult(giftType, "bạn");
 }
 
 function showGiftResult(giftType, recipient) {
@@ -175,8 +190,8 @@ function showGiftResult(giftType, recipient) {
     const giftResult = document.getElementById('gift-result');
     if (giftResult) {
         giftResult.innerHTML = `
-            <div class="gift-item" style="border-color: ${giftColors[giftType]}; background: linear-gradient(135deg, ${giftColors[giftType]}20, ${giftColors[giftType]}10);">
-                <div class="gift-icon">${giftIcons[giftType]}</div>
+            <div class="gift-item" style="border-color: ${giftColor}; background: linear-gradient(135deg, ${giftColor}20, ${giftColor}10);">
+                <div class="gift-icon">${giftIcon}</div>
                 <div class="gift-name">${giftType}</div>
             </div>
         `;
@@ -185,14 +200,7 @@ function showGiftResult(giftType, recipient) {
     // Hiển thị thông điệp chúc mừng
     const congratulationsMessage = document.getElementById('congratulations-message');
     if (congratulationsMessage) {
-        const messages = [
-            `Chúc mừng ${recipient}! 🎉`,
-            `Thật tuyệt vời ${recipient}! ✨`,
-            `Xin chúc mừng ${recipient}! 💕`,
-            `Tuyệt vời ${recipient}! 🌟`
-        ];
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        congratulationsMessage.textContent = randomMessage;
+        congratulationsMessage.textContent = "Chúc mừng cậu đã nhận được phần quà may mắn của bọn mình! 🎉";
     }
     
     // Thêm hiệu ứng trái tim bay
@@ -210,6 +218,20 @@ function createFloatingHearts() {
             createHeart();
         }
     }, 2000);
+    
+    // Tạo bong bóng động
+    setInterval(() => {
+        if (document.getElementById('welcome-page').classList.contains('active')) {
+            createBubble();
+        }
+    }, 1500);
+    
+    // Tạo emoticon động
+    setInterval(() => {
+        if (document.getElementById('welcome-page').classList.contains('active')) {
+            createEmoticon();
+        }
+    }, 3000);
 }
 
 function createHeart() {
@@ -230,15 +252,103 @@ function createHeart() {
     }, 4000);
 }
 
+function createBubble() {
+    const bubble = document.createElement('div');
+    bubble.innerHTML = '🫧';
+    bubble.style.position = 'fixed';
+    bubble.style.fontSize = '20px';
+    bubble.style.pointerEvents = 'none';
+    bubble.style.zIndex = '1000';
+    bubble.style.left = Math.random() * window.innerWidth + 'px';
+    bubble.style.top = '100vh';
+    bubble.style.animation = 'bubbleUp 6s ease-out forwards';
+    bubble.style.opacity = '0.7';
+    
+    document.body.appendChild(bubble);
+    
+    setTimeout(() => {
+        bubble.remove();
+    }, 6000);
+}
+
+function createEmoticon() {
+    const emoticon = document.createElement('div');
+    const emoticons = ['OwO', 'Uwu', '(◕‿◕)', '(｡◕‿◕｡)', '(◡‿◡)', '(◕‿◕)♡', '(◕‿◕)✨', '(◡‿◡)♡'];
+    emoticon.innerHTML = emoticons[Math.floor(Math.random() * emoticons.length)];
+    emoticon.style.position = 'fixed';
+    emoticon.style.fontSize = '16px';
+    emoticon.style.pointerEvents = 'none';
+    emoticon.style.zIndex = '1000';
+    emoticon.style.color = '#ff6b9d';
+    emoticon.style.fontWeight = 'bold';
+    emoticon.style.left = Math.random() * window.innerWidth + 'px';
+    emoticon.style.top = '100vh';
+    emoticon.style.animation = 'emoticonUp 5s ease-out forwards';
+    emoticon.style.textShadow = '0 2px 4px rgba(255, 107, 157, 0.3)';
+    
+    document.body.appendChild(emoticon);
+    
+    setTimeout(() => {
+        emoticon.remove();
+    }, 5000);
+}
+
 function createCelebrationHearts() {
     for (let i = 0; i < 15; i++) {
         setTimeout(() => {
             createHeart();
         }, i * 100);
     }
+    
+    // Thêm bong bóng chúc mừng
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+            createBubble();
+        }, i * 150);
+    }
+    
+    // Thêm emoticon chúc mừng
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            createEmoticon();
+        }, i * 200);
+    }
 }
 
-// Thêm CSS animation cho trái tim bay
+function createRibbonEffect() {
+    const giftBox = document.getElementById('gift-box');
+    if (!giftBox) return;
+    
+    // Tạo ruy băng bay
+    for (let i = 0; i < 8; i++) {
+        const ribbon = document.createElement('div');
+        ribbon.innerHTML = '🎀';
+        ribbon.style.position = 'absolute';
+        ribbon.style.fontSize = '16px';
+        ribbon.style.pointerEvents = 'none';
+        ribbon.style.zIndex = '1000';
+        
+        // Vị trí ngẫu nhiên xung quanh hộp quà
+        const angle = (i / 8) * 2 * Math.PI;
+        const radius = 200;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        ribbon.style.left = (giftBox.offsetLeft + giftBox.offsetWidth/2 + x) + 'px';
+        ribbon.style.top = (giftBox.offsetTop + giftBox.offsetHeight/2 + y) + 'px';
+        
+        document.body.appendChild(ribbon);
+        
+        // Animation ruy băng bay
+        ribbon.style.animation = 'ribbonFly 2s ease-out forwards';
+        
+        setTimeout(() => {
+            ribbon.remove();
+        }, 2000);
+    }
+}
+
+// Thêm CSS animation cho trái tim bay và hiệu ứng mới
 const style = document.createElement('style');
 style.textContent = `
     @keyframes floatUp {
@@ -265,6 +375,89 @@ style.textContent = `
             opacity: 0;
             transform: scale(0) rotate(360deg);
         }
+    }
+    
+    @keyframes giftGlow {
+        0%, 100% {
+            box-shadow: 0 15px 35px rgba(255, 107, 157, 0.4);
+        }
+        50% {
+            box-shadow: 0 20px 50px rgba(255, 107, 157, 0.8), 0 0 30px rgba(255, 107, 157, 0.6);
+        }
+    }
+    
+    @keyframes ribbonFly {
+        0% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.2) rotate(180deg);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0.5) rotate(360deg) translateY(-100px);
+        }
+    }
+    
+    @keyframes bubbleUp {
+        0% {
+            transform: translateY(0) scale(1) rotate(0deg);
+            opacity: 0.7;
+        }
+        25% {
+            transform: translateY(-25vh) scale(1.1) rotate(90deg);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(-50vh) scale(0.9) rotate(180deg);
+            opacity: 0.8;
+        }
+        75% {
+            transform: translateY(-75vh) scale(1.05) rotate(270deg);
+            opacity: 0.9;
+        }
+        100% {
+            transform: translateY(-100vh) scale(0.8) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes emoticonUp {
+        0% {
+            transform: translateY(0) scale(1) rotate(0deg);
+            opacity: 0.8;
+        }
+        25% {
+            transform: translateY(-25vh) scale(1.1) rotate(5deg);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(-50vh) scale(0.95) rotate(-5deg);
+            opacity: 0.9;
+        }
+        75% {
+            transform: translateY(-75vh) scale(1.05) rotate(3deg);
+            opacity: 0.95;
+        }
+        100% {
+            transform: translateY(-100vh) scale(0.9) rotate(0deg);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes bodyShake {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-2px); }
+        20% { transform: translateX(2px); }
+        30% { transform: translateX(-1px); }
+        40% { transform: translateX(1px); }
+        50% { transform: translateX(-1px); }
+        60% { transform: translateX(1px); }
+        70% { transform: translateX(-1px); }
+        80% { transform: translateX(1px); }
+        90% { transform: translateX(-1px); }
     }
 `;
 document.head.appendChild(style);
